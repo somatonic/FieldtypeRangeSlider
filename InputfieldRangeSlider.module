@@ -1,0 +1,84 @@
+<?php
+
+class InputfieldRangeSlider extends Inputfield {
+
+	
+
+	public static function getModuleInfo() {
+		return array(
+			'title' => __('Integer Range Slider', __FILE__), // Module Title
+			'summary' => __('Simple jQuery UI integer slider that can be configured.', __FILE__), // Module Summary
+			'version' => 100,
+			'requires' => array("FieldtypeRangeSlider")
+		);
+	}
+
+	public function __construct() {
+		parent::__construct();
+		$this->setAttribute('type', 'hidden');
+		
+	}
+
+	public function ___render() {
+
+		$out = '';
+		$out .= "<input " . $this->getAttributesString() . " />";
+
+		$min = $this->minValue;
+		$max = $this->maxValue;
+		$range = $this->isrange ? 'range: true,' : '';
+		
+		if($this->isrange) $display = "<span id='RangeSlider_{$this->name}_display1'></span> – <span id='RangeSlider_{$this->name}_display2'>0</span>";
+			else $display = "<span id='RangeSlider_{$this->name}_display1'>0</span>";
+		
+		$out .= "<div class='RangeSlider RangeSlider_$this->name' id='RangeSlider_$this->name'>$display<div></div></div>";
+
+		if($this->isrange) {
+			$display = "$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + ui.values[0] + '$this->suffix');";
+			$display .= "$( '#RangeSlider_{$this->name}_display2' ).text( '$this->prefix' + ui.values[1] + '$this->suffix');";
+			$constrain = "$( '#Inputfield_{$this->name}' ).val( ui.values[0] + ',' + ui.values[1] )";
+			$val = "values: [ $( '#Inputfield_{$this->name}' ).val().split(',')[0], $( '#Inputfield_{$this->name}' ).val().split(',')[1]]";
+			$set = "$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + $( '#RangeSlider_$this->name div' ).slider( 'values', 0 ) + '$this->suffix' );";
+			$set .= "$( '#RangeSlider_{$this->name}_display2' ).text( '$this->prefix' + $( '#RangeSlider_$this->name div' ).slider( 'values', 1 ) + '$this->suffix' );";	
+	} else {
+			$display = "$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + ui.value + '$this->suffix');";
+			$constrain = "$( '#Inputfield_{$this->name}' ).val( ui.value )";
+			$val = "value: $( '#Inputfield_{$this->name}' ).val()";
+			$set = 	"$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + $( '#RangeSlider_$this->name div' ).slider( 'value' ) + '$this->suffix' );";
+			
+			
+		}
+		$width = $this->width;
+		$step = $this->step;
+
+		$out .= <<<_END
+
+<script>
+	$( '#RangeSlider_$this->name div' ).slider({
+		$range
+		$val,
+		animate: true,
+		min: $min,
+		max: $max,
+		step: $step,
+		slide: function( event, ui ) {
+			$display
+			$constrain
+		}
+	});
+	
+	$set
+
+</script>
+<style>
+	#RangeSlider_$this->name > div { width:$width%!important; }
+</style>
+_END;
+
+	return $out;
+	}
+
+	
+
+
+}

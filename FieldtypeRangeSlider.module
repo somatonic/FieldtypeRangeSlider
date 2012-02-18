@@ -1,0 +1,163 @@
+<?php
+
+/**
+ * ProcessWire Integer Range Slider Fieldtype
+ *
+ * Field that stores an integer value. 
+ *
+ * For documentation about the fields used in this class, please see:  
+ * /wire/core/Fieldtype.php
+ * 
+ * ProcessWire 2.x 
+ * Copyright (C) 2010 by Ryan Cramer 
+ * Licensed under GNU/GPL v2, see LICENSE.TXT
+ * 
+ * http://www.processwire.com
+ * http://www.ryancramer.com
+ *
+ */
+
+class FieldtypeRangeSlider extends Fieldtype {
+
+	protected $defaults = array(
+		'defaultValue' => 0,
+		'width' => 100,
+		'minValue' => 0,
+		'maxValue' => 100,
+		'isrange' => 0,
+		'step' => 1
+		);
+
+
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Range Slider',
+			'version' => 100,
+			'summary' => 'Field that stores values using jQuery UI slider.', 
+			);
+	}
+
+
+	public function sanitizeValue(Page $page, Field $field, $value) {
+		if($field->isrange == 1) {
+			if( strpos($value,',') == FALSE ) {
+				$value = '0,0';
+			}
+		} else {
+			if( strpos($value,',') !== FALSE ) {
+				$value = '0';
+			}
+		}
+		return $value; 
+	}
+
+	/**
+	 * Format value for output
+	 *
+	 */
+
+
+	public function ___formatValue(Page $page, Field $field, $value) {
+		if($field->isrange == 1) {
+			$range = explode(",",$value);
+			$value = array((int) $range[0] , (int) $range[1]);
+			return $value;  
+		} else {
+			return (int) $value;  
+		}
+	}
+
+	public function getInputfield(Page $page, Field $field) {
+		$inputfield = $this->modules->get('InputfieldRangeSlider'); 
+		$inputfield->set('isrange', $field->isrange ? 1 : 0);
+		$inputfield->set('width', $field->width ? $field->width : $this->defaults['width']);
+		$inputfield->set('defaultValue', $field->defaultValue ? $field->defaultValue : $this->defaults['defaultValue']);
+		$inputfield->set('minValue', $field->minValue ? $field->minValue : $this->defaults['minValue']);
+		$inputfield->set('maxValue', $field->maxValue ? $field->maxValue : $this->defaults['maxValue']);
+		$inputfield->set('step', $field->step ? $field->step : $this->defaults['step']);
+		$inputfield->set('prefix', $field->prefix);
+		$inputfield->set('suffix', $field->suffix);
+		return $inputfield;
+	}
+
+	public function getDatabaseSchema(Field $field) {
+		$schema = parent::getDatabaseSchema($field); 
+		$schema['data'] = 'text NOT NULL';
+		$schema['keys']['data_exact'] = 'KEY `data_exact` (`data`(255))'; 
+		$schema['keys']['data'] = 'FULLTEXT KEY `data` (`data`)'; 
+		return $schema;
+	}
+
+	public function ___getConfigInputfields(Field $field) {
+		
+		$inputfields = parent::___getConfigInputfields($field);
+
+		$f = $this->modules->get('InputfieldCheckbox');
+		$f->setAttribute('name', 'isrange'); 
+		$f->label = 'Range';
+		$f->setAttribute('checked', $field->isrange ? 'checked' : '' );
+		$f->setAttribute('value', 1 );
+		$f->description ='Enable range slider. Values will be saved as string comma "," separated'; 
+		$inputfields->append($f);
+
+		$f = $this->modules->get('InputfieldInteger');
+		$f->setAttribute('name', 'width'); 
+		$f->label = 'Slider width';
+		$f->setAttribute('value', $field->width ? $field->width : $this->defaults['width'] ); 
+		$f->setAttribute('size', 20); 
+		$f->description = 'Width of the slider in %.'; 
+		$inputfields->append($f);
+
+		$f = $this->modules->get('InputfieldInteger');
+		$f->setAttribute('name', 'defaultValue'); 
+		$f->label = 'Default Value';
+		$f->setAttribute('value', $field->defaultValue ? $field->defaultValue : $this->defaults['defaultValue']); 
+		$f->setAttribute('size', 20); 
+		$f->description = 'Set the default value. If slider is set to range you should specify two default values with "," separated i.e. 1,100 '; 
+		$inputfields->append($f);
+
+		$f = $this->modules->get('InputfieldInteger');
+		$f->setAttribute('name', 'minValue'); 
+		$f->label = 'Minimum Allowed Value';
+		$f->setAttribute('value', $field->minValue ? $field->minValue : $this->defaults['minValue']); 
+		$f->setAttribute('size', 20); 
+		$f->description = 'The smallest number allowed by this field.'; 
+		$inputfields->append($f);
+
+		$f = $this->modules->get('InputfieldInteger');
+		$f->attr('name', 'maxValue'); 
+		$f->label = 'Maximum Allowed Value';
+		$f->setAttribute('value', $field->maxValue ? $field->maxValue : $this->defaults['maxValue']); 
+		$f->setAttribute('size', 20); 
+		$f->description = 'The largest number allowed by this field (may not exceed ' . PHP_INT_MAX . ")"; 
+		$inputfields->append($f);
+
+		$f = $this->modules->get('InputfieldInteger');
+		$f->attr('name', 'step'); 
+		$f->label = 'Step';
+		$f->setAttribute('value', $field->step ? $field->step : $this->defaults['step']); 
+		$f->setAttribute('size', 20); 
+		$f->description = 'Determines the size or amount of each interval or step the slider takes between min and max.'; 
+		$inputfields->append($f);
+
+		$f = $this->modules->get('InputfieldText');
+		$f->setAttribute('name', 'prefix'); 
+		$f->label = 'Counter Prefix';
+		$f->setAttribute('value', $field->prefix); 
+		$f->setAttribute('size', 20);
+		$f->description = 'Added before display counter.'; 
+		$inputfields->append($f);
+
+		$f = $this->modules->get('InputfieldText');
+		$f->setAttribute('name', 'suffix'); 
+		$f->label = 'Counter Suffix';
+		$f->setAttribute('value', $field->suffix); 
+		$f->setAttribute('size', 20);
+		$f->description = 'Added after display counter.'; 
+		$inputfields->append($f);
+
+		return $inputfields; 
+	}
+
+}
+
