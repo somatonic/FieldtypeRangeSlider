@@ -1,21 +1,30 @@
-Range Slider Abstractor module for ProcessWire 2
-=====================================================================
+
+RangeSlider module for ProcessWire 2
+=========================================================================
 
 WHAT IT DOES
 ------------
 
 This fieldtype let's you create slider input fields in the admin
-using the built in jQuery UI Slider.
-You can use it as a regular single or enable range slider.
+using the built in jQuery UI Slider. You can use it as a regular 
+single value slider, or enable range which gives you two number.
 
-In the template you can simply output the value using
+In the template you can use the field as follows:
 
-If used as single value slider
-echo $page->fieldname
+If used as single value slider 
+    echo $page->fieldname
 
-if ranged slider is enabled
-echo $page->fieldname[0]
-echo $page->fieldname[1]
+If ranged slider is enabled
+    echo $page->fieldname->min
+    echo $page->fieldname->max
+
+Use in selectors strings
+
+With a regular single value slider
+    $pages->find("range=120");
+
+If range slider is enabled
+    $pages->find("range.data>=100, range.data_max<120");
 
 
 It comes with various settings. 
