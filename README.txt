@@ -24,7 +24,7 @@ With a regular single value slider
     $pages->find("range=120");
 
 If range slider is enabled
-    $pages->find("range.data>=100, range.data_max<120");
+    $pages->find("range.min>=100, range.max<120");
 
 
 It comes with various settings. 
