@@ -66,6 +66,8 @@ class InputfieldRangeSlider extends Inputfield {
 
 			$constrain = "$( '#Inputfield_{$this->name}1' ).val( ui.values[0] );";
 			$constrain .= "$( '#Inputfield_{$this->name}2' ).val( ui.values[1] );";
+			// for change event checks
+			$constrain .= "$( '#Inputfield_{$this->name}1' ).trigger( 'change' );";
 			
 			$val = "values: [ $( '#Inputfield_{$this->name}1' ).val(), $( '#Inputfield_{$this->name}2' ).val() ]";
 			$set = "$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + $( '#RangeSlider_$this->name div' ).slider( 'values', 0 ) + '$this->suffix' );";
@@ -75,7 +77,11 @@ class InputfieldRangeSlider extends Inputfield {
 			$out .= "<input type='hidden' name='{$this->name}' id='Inputfield_" . $this->name . "1' value='" . $value->min . "'/>";
 
 			$display = "$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + ui.value + '$this->suffix');";
+			
 			$constrain = "$( '#Inputfield_{$this->name}1' ).val( ui.value )";
+			// for change event checks
+			$constrain .= "$( '#Inputfield_{$this->name}1' ).trigger( 'change' );";
+		
 			$val = "value: $( '#Inputfield_{$this->name}1' ).val()";
 			$set = 	"$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + $( '#RangeSlider_$this->name div' ).slider( 'value' ) + '$this->suffix' );";
 		
@@ -86,6 +92,7 @@ class InputfieldRangeSlider extends Inputfield {
 
 		$out .= <<<_END
 <script>
+$(function(){
 	$( '#RangeSlider_$this->name div' ).slider({
 		$range
 		$val,
@@ -96,10 +103,12 @@ class InputfieldRangeSlider extends Inputfield {
 		slide: function( event, ui ) {
 			$display
 			$constrain
+
 		}
 	});
-	
 	$set
+});
+
 
 </script>
 <style>
