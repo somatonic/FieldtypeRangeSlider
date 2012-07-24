@@ -20,6 +20,7 @@ class InputfieldRangeSlider extends Inputfield {
 			'title' => __('Integer Range Slider', __FILE__), // Module Title
 			'summary' => __('Simple jQuery UI integer range slider that can be configured.', __FILE__), // Module Summary
 			'version' => 101,
+			'href' => 'http://processwire.com/talk/topic/972-jquery-ui-range-slider-fieldtype/page__hl__rangeslider',
 			'requires' => array("FieldtypeRangeSlider")
 		);
 	}
