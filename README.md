@@ -10,7 +10,7 @@ This fieldtype let's you create slider input fields in the admin
 using the built in jQuery UI Slider. You can use it as a regular
 single value slider, or enable range which gives you two number.
 
-In the template you can use the field as follows:
+### Output the values in templates
 
 If used as single value slider
     `echo $page->fieldname`
@@ -19,7 +19,7 @@ If ranged slider is enabled
     `echo $page->fieldname->min`
     `echo $page->fieldname->max`
 
-Use in selectors strings
+### Use in selectors strings
 
 With a regular single value slider
     `$pages->find("range=120");`
