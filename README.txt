@@ -1,12 +1,10 @@
 
-RangeSlider module for ProcessWire 2
-=========================================================================
+# RangeSlider module for ProcessWire 2.+
 
-Forum thread
-http://processwire.com/talk/topic/972-jquery-ui-range-slider-fieldtype/page__hl__rangeslider
+Forum thread:
+[RangeSlider Thread](http://processwire.com/talk/topic/972-jquery-ui-range-slider-fieldtype/page__hl__rangeslider)
 
-WHAT IT DOES
-------------
+## How does it work
 
 This fieldtype let's you create slider input fields in the admin
 using the built in jQuery UI Slider. You can use it as a regular
@@ -15,22 +13,22 @@ single value slider, or enable range which gives you two number.
 In the template you can use the field as follows:
 
 If used as single value slider
-    echo $page->fieldname
+    `echo $page->fieldname`
 
 If ranged slider is enabled
-    echo $page->fieldname->min
-    echo $page->fieldname->max
+    `echo $page->fieldname->min`
+    `echo $page->fieldname->max`
 
 Use in selectors strings
 
 With a regular single value slider
-    $pages->find("range=120");
+    `$pages->find("range=120");`
 
 If range slider is enabled
-    $pages->find("range.min>=100, range.max<120");
+    `$pages->find("range.min>=100, range.max<120");`
 
 
-It comes with various settings.
+## It comes with various settings.
 
 - range enable
 - width of slider (%)
@@ -43,10 +41,9 @@ It comes with various settings.
 
 
 
-HOW TO INSTALL
---------------
+## How to install
 
-1. Download and place the RangeSLider folder in:
+1. Download and place the RangeSlider folder in:
 /site/modules/
 
 2. In the admin control panel, go to Modules. At the bottom of the

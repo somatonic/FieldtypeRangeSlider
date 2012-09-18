@@ -31,7 +31,7 @@ class FieldtypeRangeSlider extends Fieldtype {
 		return array(
 			'title' => __('Range Slider', __FILE__), // Module Title
 			'summary' => __('Field that stores integer values using jQuery UI slider.', __FILE__), // Module Summary
-			'version' => 101,
+			'version' => 102,
 			'installs' => 'InputfieldRangeSlider'
 		);
 	}
@@ -68,7 +68,7 @@ class FieldtypeRangeSlider extends Fieldtype {
 		$inputfield = $this->modules->get('InputfieldRangeSlider');
 		$inputfield->set('isrange', $field->isrange ? 1 : 0);
 		$inputfield->set('width', $field->width ? $field->width : $this->defaults['width']);
-		$inputfield->set('defaultValue', $field->defaultValue ? $field->defaultValue : $this->defaults['defaultValue']);
+		$inputfield->set('defaultValue', (strlen(trim($field->defaultValue)) > 0) ? $field->defaultValue : $this->defaults['defaultValue']);
 		$inputfield->set('minValue', $field->minValue ? $field->minValue : $this->defaults['minValue']);
 		$inputfield->set('maxValue', $field->maxValue ? $field->maxValue : $this->defaults['maxValue']);
 		$inputfield->set('step', $field->step ? $field->step : $this->defaults['step']);
@@ -117,6 +117,7 @@ class FieldtypeRangeSlider extends Fieldtype {
 		// get blank range
 		$range = $this->getBlankValue($page, $field);
 		// populate the range
+
 		$range->min = $value['data'];
 		$range->max = $value['data_max'];
 
@@ -162,7 +163,7 @@ class FieldtypeRangeSlider extends Fieldtype {
 		$f->label = 'Range';
 		$f->setAttribute('checked', $field->isrange ? 'checked' : '' );
 		$f->setAttribute('value', 1 );
-		$f->description ='Enable range slider. Values will be saved as string comma "," separated';
+		$f->description ='Enable range slider. Values will be saved as an object. You then use $value->min and $value->max for output.';
 		$inputfields->append($f);
 
 		$f = $this->modules->get('InputfieldInteger');
@@ -173,12 +174,12 @@ class FieldtypeRangeSlider extends Fieldtype {
 		$f->description = 'Width of the slider in %.';
 		$inputfields->append($f);
 
-		$f = $this->modules->get('InputfieldInteger');
+		$f = $this->modules->get('InputfieldText');
 		$f->setAttribute('name', 'defaultValue');
 		$f->label = 'Default Value';
 		$f->setAttribute('value', $field->defaultValue ? $field->defaultValue : $this->defaults['defaultValue']);
 		$f->setAttribute('size', 20);
-		$f->description = 'Set the default value. If slider is set to range you should specify two default values with "," separated i.e. 1,100 ';
+		$f->description = 'Set the default value. If slider is set to range you should specify two default values "," separated i.e. 1,100 ';
 		$inputfields->append($f);
 
 		$f = $this->modules->get('InputfieldInteger');

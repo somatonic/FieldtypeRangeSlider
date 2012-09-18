@@ -19,8 +19,7 @@ class InputfieldRangeSlider extends Inputfield {
 		return array(
 			'title' => __('Integer Range Slider', __FILE__), // Module Title
 			'summary' => __('Simple jQuery UI integer range slider that can be configured.', __FILE__), // Module Summary
-			'version' => 101,
-			'href' => 'http://processwire.com/talk/topic/972-jquery-ui-range-slider-fieldtype/page__hl__rangeslider',
+			'version' => 102,
 			'requires' => array("FieldtypeRangeSlider")
 		);
 	}
@@ -53,12 +52,26 @@ class InputfieldRangeSlider extends Inputfield {
 		$range = $this->isrange ? 'range: true,' : '';
 		$value = $this->attr('value');
 
+
 		if($this->isrange) $display = "<span id='RangeSlider_{$this->name}_display1'></span> – <span id='RangeSlider_{$this->name}_display2'>0</span>";
 			else $display = "<span id='RangeSlider_{$this->name}_display1'>0</span>";
 
 		$out .= "<div class='RangeSlider RangeSlider_$this->name' id='RangeSlider_$this->name'>$display<div></div></div>";
 
 		if($this->isrange) {
+
+			if(empty($value->min) && empty($value->max)) {
+				if(strlen($this->defaultValue)) {
+					$defaults = explode(",",$this->defaultValue);
+					if(count($defaults) < 2) {
+						$this->error("Default value should be in format [int,int]. (1,100) if range is checked");
+					} else {
+						$value->min = $defaults[0];
+						$value->max = $defaults[1];
+					}
+				}
+			}
+
 			$out .= "<input type='hidden' name='{$this->name}' id='Inputfield_" . $this->name . "1' value='" . $value->min . "'/>";
 			$out .= "<input type='hidden' name='{$this->name}_max' id='Inputfield_" . $this->name . "2' value='" . $value->max . "'/>";
 
@@ -75,6 +88,8 @@ class InputfieldRangeSlider extends Inputfield {
 			$set .= "$( '#RangeSlider_{$this->name}_display2' ).text( '$this->prefix' + $( '#RangeSlider_$this->name div' ).slider( 'values', 1 ) + '$this->suffix' );";
 
 		} else {
+			$value->min = (strlen($value->min)) ? $value->min : $this->defaultValue;
+
 			$out .= "<input type='hidden' name='{$this->name}' id='Inputfield_" . $this->name . "1' value='" . $value->min . "'/>";
 
 			$display = "$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + ui.value + '$this->suffix');";
@@ -117,7 +132,7 @@ $(function(){
 </style>
 _END;
 
-	return $out;
+		return $out;
 
 	}
 
