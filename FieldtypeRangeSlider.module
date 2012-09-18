@@ -31,7 +31,7 @@ class FieldtypeRangeSlider extends Fieldtype {
 		return array(
 			'title' => __('Range Slider', __FILE__), // Module Title
 			'summary' => __('Field that stores integer values using jQuery UI slider.', __FILE__), // Module Summary
-			'version' => 102,
+			'version' => 103,
 			'installs' => 'InputfieldRangeSlider'
 		);
 	}
@@ -60,6 +60,7 @@ class FieldtypeRangeSlider extends Fieldtype {
 		if($subfield == 'max') $subfield = 'data_max';
 		return parent::getMatchQuery($query, $table, $subfield, $operator, $value);
 	}
+
 	/**
 	 * get Inputfield for this fieldtype, set config attributes so they can be used in the inputfield
 	 *
@@ -95,8 +96,13 @@ class FieldtypeRangeSlider extends Fieldtype {
 	}
 
 	/**
-	 * if value not of instance RangeSlider return empty instance
+	 * Any value will get sanitized before setting it to a page object
+	 * and before saving the data
 	 *
+	 * If value not of instance RangeSlider return empty instance
+	 *
+	 * We also check if the value is empty and return defaultValue in case
+	 * it's not yet saved
 	 */
 	public function sanitizeValue(Page $page, Field $field, $value) {
 
@@ -105,6 +111,27 @@ class FieldtypeRangeSlider extends Fieldtype {
 		// report any changes to the field values
 		if($value->isChanged('min') || $value->isChanged('max')) $page->trackChange($field->name);
 
+		// handle default values if field values aren't yet saved in db
+
+		// if no defaultValue defined we don't need to go further
+		if(strlen($field->defaultValue) == 0) return $value;
+
+		// if not range slider return min value and if not set the defaultValue
+		if(!$field->isrange) {
+			$value->min = (!strlen($value->min)) ? $field->defaultValue : $value->min;
+			return $value;
+		}
+
+		// if range slider and empty values return the field default
+		if(empty($value->min) && empty($value->max)) {
+			$defaults = explode(",",$field->defaultValue);
+			if(count($defaults) < 2) {
+				$this->error("Default value should be in format [int,int]. (1,100) if range is checked");
+			} else {
+				$value->min = $defaults[0];
+				$value->max = $defaults[1];
+			}
+		}
 		return $value;
 	}
 
@@ -117,7 +144,6 @@ class FieldtypeRangeSlider extends Fieldtype {
 		// get blank range
 		$range = $this->getBlankValue($page, $field);
 		// populate the range
-
 		$range->min = $value['data'];
 		$range->max = $value['data_max'];
 
