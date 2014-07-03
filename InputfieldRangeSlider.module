@@ -13,19 +13,18 @@
  *
  */
 
-class InputfieldRangeSlider extends Inputfield {
+class InputfieldRangeSlider extends Inputfield implements InputfieldHasArrayValue{
 
 	public static function getModuleInfo() {
 		return array(
 			'title' => __('Integer Range Slider', __FILE__), // Module Title
 			'summary' => __('Simple jQuery UI integer range slider that can be configured.', __FILE__), // Module Summary
-			'version' => 103,
+			'version' => 104,
 			'requires' => array("FieldtypeRangeSlider")
 		);
 	}
 
 	public function __construct() {
-		require_once(dirname(__FILE__) . '/RangeSlider.php');
 		parent::__construct();
 	}
 
@@ -35,8 +34,10 @@ class InputfieldRangeSlider extends Inputfield {
 
 	public function setAttribute($key, $value) {
 
-		if($key == 'value' && !$value instanceof RangeSlider && !is_null($value)) {
-			throw new WireException("This input only accepts a RangeSlider for it's value");
+		if($key == 'value'){
+			if(!is_array($value)) {
+				throw new WireException("This input only accepts an array for it's value");
+			}
 		}
 
 		return parent::setAttribute($key, $value);
@@ -59,8 +60,8 @@ class InputfieldRangeSlider extends Inputfield {
 		$out .= "<div class='RangeSlider RangeSlider_$this->name' id='RangeSlider_$this->name'>$display<div></div></div>";
 
 		if($this->isrange) {
-			$out .= "<input type='hidden' name='{$this->name}' id='Inputfield_" . $this->name . "1' value='" . $value->min . "'/>";
-			$out .= "<input type='hidden' name='{$this->name}_max' id='Inputfield_" . $this->name . "2' value='" . $value->max . "'/>";
+			$out .= "<input type='hidden' name='{$this->name}[min]' id='Inputfield_" . $this->name . "1' value='" . $value['min'] . "'/>";
+			$out .= "<input type='hidden' name='{$this->name}[max]' id='Inputfield_" . $this->name . "2' value='" . $value['max'] . "'/>";
 
 			$display = "$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + ui.values[0] + '$this->suffix');";
 			$display .= "$( '#RangeSlider_{$this->name}_display2' ).text( '$this->prefix' + ui.values[1] + '$this->suffix');";
@@ -75,7 +76,7 @@ class InputfieldRangeSlider extends Inputfield {
 			$set .= "$( '#RangeSlider_{$this->name}_display2' ).text( '$this->prefix' + $( '#RangeSlider_$this->name div' ).slider( 'values', 1 ) + '$this->suffix' );";
 
 		} else {
-			$out .= "<input type='hidden' name='{$this->name}' id='Inputfield_" . $this->name . "1' value='" . $value->min . "'/>";
+			$out .= "<input type='hidden' name='{$this->name}[min]' id='Inputfield_" . $this->name . "1' value='" . $value['min'] . "'/>";
 
 			$display = "$( '#RangeSlider_{$this->name}_display1' ).text( '$this->prefix' + ui.value + '$this->suffix');";
 
@@ -126,22 +127,25 @@ _END;
 
 		$name = $this->attr('name');
 		$range = $this->attr('value');
+		$inputValue = $input->$name;
 
-		if(isset($input->$name)) {
+		if(isset($inputValue)) {
 			// check for changes in min value
-			if($range->min != $input->$name){
-				$range->set('min',$input->$name);
+			if($range['min'] != $inputValue['min']){
+				$range['min'] = $inputValue['min'];
 				$this->trackChange('value');
 			}
 			// only if range is enabled
 			if($this->isrange){
-				if($range->max != $input["{$name}_max"]){
-					$range->set('max',$input["{$name}_max"]);
+				if($range['max'] != $inputValue['max']){
+					$range['max'] = $inputValue['max'];
 					$this->trackChange('value');
 				}
 			}
 		}
-
+		// set new value
+		$this->attr("value", $range);
+		echo "json:" . wireEncodeJSON((array) $this->attr("value"), true);
 		return $this;
 	}
 

@@ -43,7 +43,7 @@ If range slider is enabled
 
 ## How to install
 
-1. Download and place the RangeSlider folder in:
+1. Download and place the FieldtypeRangeSlider folder in:
 /site/modules/
 
 2. In the admin control panel, go to Modules. At the bottom of the
@@ -53,3 +53,36 @@ screen, click the "Check for New Modules" button.
 
 4. Create a new Field with the new "RangeSlider" Fieldtype. Once saved
 you can configure the fieldtype, with various options under "Details" tab.
+
+## Upgrade Notes
+
+from **1.0.3** to **1.0.4**
+
+Value type of the field has changed from RangeSlider object to array. This only affects how you would set values to the field or inputfield from the API. So if you used RangeSlider previous 1.0.4 and have custom code to modify values via API, either in modules or template files, you should modify it to account for the changes.
+
+**Before 1.0.4**
+
+```
+$page->of(false);
+$page->myslider->min = 42;
+
+$page->myrange->min = 10;
+$page->myrange->max = 40;
+```
+
+**After**
+
+```
+$page->of(false);
+$page->myslider = array('min' => 91);
+
+$page->myrange->min = array('min' => 10);
+$page->myrange->max = array('max' => 40);
+```
+
+Accessing the value hasn't changed and is still the same as in prior versions.
+
+
+## Changelog
+
+* __1.0.4__ : Changed value type from RangeSlider object to array. Updated Inputfield to make it work as module config field (where Fieldtype isn't used).
