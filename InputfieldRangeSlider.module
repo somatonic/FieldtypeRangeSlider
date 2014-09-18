@@ -145,7 +145,7 @@ _END;
 		}
 		// set new value
 		$this->attr("value", $range);
-		echo "json:" . wireEncodeJSON((array) $this->attr("value"), true);
+		// echo "json:" . wireEncodeJSON((array) $this->attr("value"), true);
 		return $this;
 	}
 
